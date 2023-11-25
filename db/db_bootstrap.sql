@@ -18,16 +18,29 @@ flush privileges;
 -- change it here too. 
 use cool_db;
 
--- Put your DDL 
-CREATE TABLE fav_colors (
-  name VARCHAR(20),
-  color VARCHAR(10)
+-- user table 
+CREATE TABLE user (
+  userID int UNIQUE NOT NULL PRIMARY KEY,
+  firstName varchar(50) NOT NULL,
+  lastName (50) NOT NULL, 
+  userYear char(3),
+  major varchar(50),
+  banned boolean,
+  moderatorID int UNIQUE NOT NULL,
+  preferredSubject varchar(100) NOT NULL
 );
 
--- Add sample data. 
-INSERT INTO fav_colors
-  (name, color)
-VALUES
-  ('dev', 'blue'),
-  ('pro', 'yellow'),
-  ('junior', 'red');
+
+-- -- Put your DDL 
+-- CREATE TABLE fav_colors (
+--   name VARCHAR(20),
+--   color VARCHAR(10)
+-- );
+
+-- -- Add sample data. 
+-- INSERT INTO fav_colors
+--   (name, color)
+-- VALUES
+--   ('dev', 'blue'),
+--   ('pro', 'yellow'),
+--   ('junior', 'red');
