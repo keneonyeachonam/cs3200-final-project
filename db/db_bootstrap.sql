@@ -1,6 +1,6 @@
 -- This file is to bootstrap a database for the CS3200 project. 
 
-DROP IF EXISTS virtualStudyGroupOrganizer_db; -- just so that we can easily create the db and tables whenever we change things
+DROP DATABASE IF EXISTS virtualStudyGroupOrganizer_db; -- just so that we can easily create the db and tables whenever we change things
                                     -- must remember to remove before submitting
 
 -- Create a new database.  You can change the name later.  You'll
@@ -32,8 +32,8 @@ CREATE TABLE user (
   major varchar(50),
   banned boolean NOT NULL DEFAULT 0,
   moderatorID int,
-  preferredSubject int NOT NULL
-  FOREIGN KEY (moderatorID) REFERENCES moderator (moderatorID) ON UPDATE cascade ON DELETE cascade
+  preferredSubject int NOT NULL,
+  FOREIGN KEY (moderatorID) REFERENCES moderator (moderatorID) ON UPDATE cascade ON DELETE cascade,
   FOREIGN KEY (preferredSubject) REFERENCES subjects (subjectID) ON UPDATE cascade ON DELETE cascade
 );
 
@@ -45,7 +45,7 @@ CREATE TABLE report (
   reasoning varchar(100) NOT NULL,
   resolved boolean NOT NULL DEFAULT 0,
   moderatorID int,
-  PRIMARY KEY(authorID, reporteeID, reportMessage),
+  PRIMARY KEY(authorID, reporteeID, reportedMessage),
   FOREIGN KEY (authorID) REFERENCES user (userID) ON UPDATE cascade ON DELETE cascade,
   FOREIGN KEY (reporteeID) REFERENCES user (userID) ON UPDATE cascade ON DELETE cascade,
   FOREIGN KEY (reportedMessage) REFERENCES messages (messageID) ON UPDATE cascade ON DELETE cascade,
@@ -56,7 +56,7 @@ CREATE TABLE report (
 CREATE TABLE bookmark (
   userID int NOT NULL,
   messageBoardID int NOT NULL,
-  PRIMARY KEY (userID, authorID),
+  PRIMARY KEY (userID),
   FOREIGN KEY (userID) REFERENCES user (userID) ON UPDATE cascade ON DELETE cascade,
   FOREIGN KEY (messageBoardID) REFERENCES messageBoard (messageBoardID) ON UPDATE cascade ON DELETE cascade
 );
@@ -120,7 +120,7 @@ CREATE TABLE review (
   groupID int NOT NULL,
   author int NOT NULL,
   review varchar(100) NOT NULL,
-  rating int NOT NULL CHECK (rating >= 1 AND rating <= 5)
+  rating int NOT NULL CHECK (rating >= 1 AND rating <= 5),
   FOREIGN KEY (groupID) REFERENCES studyGroup (groupID) ON UPDATE cascade ON DELETE cascade,
   FOREIGN KEY (author) REFERENCES user (userID) ON UPDATE cascade ON DELETE cascade
 );
@@ -199,11 +199,11 @@ VALUES ('General Discussion'),
 -- Inserting into the 'messages' table
 INSERT INTO messages (author, replyToID, messageBoardID, publishTime, content, published)
 VALUES (1, NULL, 1, '2023-01-01 08:00:00', 'Hello, everyone!', 1),
-       (2, NULL, 2, 'Anybody needs help with programming?', 1),
-       (3, NULL, 3, 'Let us discuss interesting engineering projects!', 1),
-       (4, 1, 1, 'Sure, John!', 1),
-       (5, 2, 2, 'I am struggling with calculus. Can anyone help?', 1),
-       (1, 3, 3, 'I have a biology-related question. Anyone familiar?', 1);
+       (2, NULL, 2, '2023-01-01 08:00:00', 'Anybody needs help with programming?', 1),
+       (3, NULL, 3, '2023-01-01 08:00:00', 'Let us discuss interesting engineering projects!', 1),
+       (4, 1, 1, '2023-01-01 08:00:00', 'Sure, John!', 1),
+       (5, 2, 2, '2023-01-01 08:00:00', 'I am struggling with calculus. Can anyone help?', 1),
+       (1, 3, 3, '2023-01-01 08:00:00', 'I have a biology-related question. Anyone familiar?', 1);
 
 -- Inserting into the 'bookmark' table
 INSERT INTO bookmark (userID, messageBoardID)
