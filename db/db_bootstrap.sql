@@ -28,12 +28,12 @@ CREATE TABLE user (
   userID int PRIMARY KEY AUTO_INCREMENT,
   firstName varchar(50) NOT NULL,
   lastName varchar(50) NOT NULL, 
-  userYear char(3),
-  major varchar(50),
+  userYear int,
+  major varchar(100),
   banned boolean NOT NULL DEFAULT 0,
   moderatorID int,
-  preferredSubject int NOT NULL,
-  FOREIGN KEY (moderatorID) REFERENCES moderator (moderatorID) ON UPDATE cascade ON DELETE cascade,
+  preferredSubject int,
+  FOREIGN KEY (moderatorID) REFERENCES moderator (moderatorID) ON UPDATE cascade ON DELETE restrict,
   FOREIGN KEY (preferredSubject) REFERENCES subjects (subjectID) ON UPDATE cascade ON DELETE cascade
 );
 
@@ -42,13 +42,13 @@ CREATE TABLE report (
   authorID int NOT NULL,
   reporteeID int NOT NULL,
   reportedMessage int NOT NULL, 
-  reasoning varchar(100) NOT NULL,
+  reasoning text NOT NULL,
   resolved boolean NOT NULL DEFAULT 0,
   moderatorID int,
   PRIMARY KEY(authorID, reporteeID, reportedMessage),
-  FOREIGN KEY (authorID) REFERENCES user (userID) ON UPDATE cascade ON DELETE cascade,
-  FOREIGN KEY (reporteeID) REFERENCES user (userID) ON UPDATE cascade ON DELETE cascade,
-  FOREIGN KEY (reportedMessage) REFERENCES messages (messageID) ON UPDATE cascade ON DELETE cascade,
+  FOREIGN KEY (authorID) REFERENCES user (userID) ON UPDATE cascade ON DELETE restrict,
+  FOREIGN KEY (reporteeID) REFERENCES user (userID) ON UPDATE cascade ON DELETE restrict,
+  FOREIGN KEY (reportedMessage) REFERENCES messages (messageID) ON UPDATE restrict ON DELETE restrict,
   FOREIGN KEY (moderatorID) REFERENCES moderator (moderatorID) ON UPDATE cascade ON DELETE cascade
 );
 
@@ -56,7 +56,7 @@ CREATE TABLE report (
 CREATE TABLE bookmark (
   userID int NOT NULL,
   messageBoardID int NOT NULL,
-  PRIMARY KEY (userID),
+  PRIMARY KEY (userID, messageBoardID),
   FOREIGN KEY (userID) REFERENCES user (userID) ON UPDATE cascade ON DELETE cascade,
   FOREIGN KEY (messageBoardID) REFERENCES messageBoard (messageBoardID) ON UPDATE cascade ON DELETE cascade
 );
@@ -67,22 +67,23 @@ CREATE TABLE messages (
   author int NOT NULL,
   replyToID int,
   messageBoardID int NOT NULL,
-  publishTime datetime, 
+  publishTime datetime DEFAULT CURRENT_TIMESTAMP,
   content text,
-  published boolean DEFAULT 0,
+  published boolean DEFAULT 1,
   moderatorID int,
   FOREIGN KEY (author) REFERENCES user (userID) ON UPDATE cascade ON DELETE cascade,
   FOREIGN KEY (replyToID) REFERENCES messages (messageID) ON UPDATE cascade ON DELETE cascade,
   FOREIGN KEY (messageBoardID) REFERENCES messageBoard (messageBoardID) ON UPDATE cascade ON DELETE cascade,
-  FOREIGN KEY (moderatorID) REFERENCES moderator (moderatorID) ON UPDATE cascade ON DELETE cascade
+  FOREIGN KEY (moderatorID) REFERENCES moderator (moderatorID) ON UPDATE cascade ON DELETE restrict
 );
 
 -- messages board table
 CREATE TABLE messageBoard (
     messageBoardID int PRIMARY KEY AUTO_INCREMENT,
     boardName varchar(50) NOT NULL,
+    banned boolean NOT NULL DEFAULT 0,
     moderatorID int,
-    FOREIGN KEY (moderatorID) REFERENCES moderator (moderatorID) ON UPDATE cascade ON DELETE cascade
+    FOREIGN KEY (moderatorID) REFERENCES moderator (moderatorID) ON UPDATE cascade ON DELETE restrict
 );
 
 
@@ -108,18 +109,18 @@ CREATE TABLE studyGroup (
   meetingTime datetime,
   capacity int NOT NULL,
   enrollment int DEFAULT 0,
-  goal varchar(100) NOT NULL,
+  goal text NOT NULL,
   moderatorID int,
   FOREIGN KEY (studySubject) REFERENCES subjects (subjectID) ON UPDATE cascade ON DELETE cascade,
   FOREIGN KEY (organizer) REFERENCES user (userID) ON UPDATE cascade ON DELETE cascade,
-  FOREIGN KEY (moderatorID) REFERENCES moderator (moderatorID) ON UPDATE cascade ON DELETE cascade
+  FOREIGN KEY (moderatorID) REFERENCES moderator (moderatorID) ON UPDATE cascade ON DELETE restrict
 );
 
 CREATE TABLE review (
   reviewID int PRIMARY KEY AUTO_INCREMENT,
   groupID int NOT NULL,
   author int NOT NULL,
-  review varchar(100) NOT NULL,
+  review text,
   rating int NOT NULL CHECK (rating >= 1 AND rating <= 5),
   FOREIGN KEY (groupID) REFERENCES studyGroup (groupID) ON UPDATE cascade ON DELETE cascade,
   FOREIGN KEY (author) REFERENCES user (userID) ON UPDATE cascade ON DELETE cascade
@@ -129,13 +130,12 @@ CREATE TABLE resources (
   resourceID int PRIMARY KEY AUTO_INCREMENT,
   uploader int NOT NULL,
   uploadDateTime datetime DEFAULT CURRENT_TIMESTAMP,
-  uploadedResource varchar(100) NOT NULL, -- idk what to put for the type
-  published boolean NOT NULL DEFAULT 0,
+  uploadedResource blob NOT NULL,
+  published boolean NOT NULL DEFAULT 1,
   groupID int NOT NULL,
   moderatorID int,
   FOREIGN KEY (uploader) REFERENCES user (userID) ON UPDATE cascade ON DELETE cascade,
-  FOREIGN KEY (groupID) REFERENCES studyGroup (groupID) ON UPDATE cascade ON DELETE cascade,
-  FOREIGN KEY (moderatorID) REFERENCES moderator (moderatorID) ON UPDATE cascade ON DELETE cascade
+  FOREIGN KEY (groupID) REFERENCES studyGroup (groupID) ON UPDATE cascade ON DELETE cascade
 );
 
 CREATE TABLE moderator (
