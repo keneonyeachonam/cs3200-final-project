@@ -13,8 +13,8 @@ create database virtualStudyGroupOrganizer_db;
 -- all privilages to the new database we just created. 
 -- TODO: If you changed the name of the database above, you need 
 -- to change it here too.
-grant all privileges on virtualStudyGroupOrganizer_db.* to 'webapp'@'%';
-flush privileges;
+-- grant all privileges on virtualStudyGroupOrganizer_db.* to 'webapp' @ '%';
+-- flush privileges;
 
 -- Move into the database we just created.
 -- TODO: If you changed the name of the database above, you need to
@@ -92,7 +92,9 @@ CREATE TABLE attendance (
   groupID int NOT NULL,
   sessionDate DATETIME NOT NULL,
   attended boolean NOT NULL,
-  PRIMARY KEY(userID, groupID, sessionDate)
+  PRIMARY KEY(userID, groupID, sessionDate),
+  FOREIGN KEY (userID) REFERENCES user (userID) ON UPDATE cascade ON DELETE cascade,
+  FOREIGN KEY (groupID) REFERENCES studyGroup (groupID) ON UPDATE cascade ON DELETE cascade
 );
 
 CREATE TABLE subjects (
