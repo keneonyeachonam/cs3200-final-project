@@ -1,8 +1,4 @@
 -- This file is to bootstrap a database for the CS3200 project. 
-
-DROP DATABASE IF EXISTS virtualStudyGroupOrganizer_db; -- just so that we can easily create the db and tables whenever we change things
-                                    -- must remember to remove before submitting
-
 -- Create a new database.  You can change the name later.  You'll
 -- need this name in the FLASK API file(s),  the AppSmith 
 -- data source creation.
@@ -85,7 +81,6 @@ CREATE TABLE messageBoard (
     moderatorID int,
     FOREIGN KEY (moderatorID) REFERENCES moderator (moderatorID) ON UPDATE cascade ON DELETE restrict
 );
-
 
 CREATE TABLE attendance (
   userID int NOT NULL,
